@@ -13,9 +13,7 @@ public class SignWebviewActivity extends AppCompatActivity {
         String uri  = getIntent().getStringExtra("uri");
 
         webview = (WebView) findViewById(R.id.webview);
-        //设置WebView属性，能够执行Javascript脚本
         webview.getSettings().setJavaScriptEnabled(true);
-        //加载需要显示的网页
         webview.loadUrl(uri);
     }
 }
