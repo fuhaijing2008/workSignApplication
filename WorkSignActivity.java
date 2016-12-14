@@ -25,10 +25,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -78,8 +74,7 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
             @Override
             public void onClick(View view) {
               //  attemptLogin();
-
-                attemptLogin2();
+                attemptLoginByWeb();
             }
         });
 
@@ -98,20 +93,27 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
             }
         });
 
-        setDafultToken();
+        setDefaultToken();
         setRandomLat();
         setRandomLng();
         setSignType();
-
     }
 
-    private void attemptLogin2() {
+    private void attemptLoginByWeb() {
+        String uri = getSignUriAndSaveToken();
+        signOnWeb(uri);
+    }
 
+    private String getSignUriAndSaveToken() {
         String token = mTokenView.getText().toString();
         String lat = mLatView.getText().toString();
         String lng = mLngView.getText().toString();
-        String uri  =NetConfig.getSignUri(token,type,lat,lng);
-        saveTokenToPerfercen(token);
+        String uri  = NetConfig.getSignUri(token,type,lat,lng);
+        saveToken(token);
+        return uri;
+    }
+
+    private void signOnWeb(String uri) {
         Intent intent = new Intent(WorkSignActivity.this, SignWebviewActivity.class);
         intent.putExtra("uri",uri);
         startActivity(intent);
@@ -120,14 +122,14 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
     private void setSignType() {
         Calendar c = Calendar.getInstance();//可以对每个时间域单独修改
         int hour = c.get(Calendar.HOUR_OF_DAY);
-        if(hour>12) {
+        if(hour>12)
             type = SIGN_OUT;
-        }else
+        else
             type = SIGN_IN;
         mEmailSignInButton.setText(type);
     }
 
-    private void setDafultToken(){
+    private void setDefaultToken(){
         String token  = readTokenFromPerference();
         mTokenView.setText(token);
     }
@@ -198,16 +200,12 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
         if (mAuthTask != null) {
             return;
         }
-
         // Store values at the time of the login attempt.
         String token = mTokenView.getText().toString();
         String lat = mLatView.getText().toString();
         String lng = mLngView.getText().toString();
-
-
         // Show a progress spinner, and kick off a background task to
         // perform the user login attempt.
-
          mAuthTask = new UserLoginTask(token, lat,lng);
          mAuthTask.execute((Void) null);
 
@@ -285,82 +283,33 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
         String result = "ddd";
         @Override
         protected Boolean doInBackground(Void... params) {
-                String uri2 ="https://www.baidu.com";
                 try {
                     result =token+lat+lng;
                     saveTokenToPerfercen(token);
                     String uri  =NetConfig.getSignUri(token,type,lat,lng);
-                    result =  requestByGet(uri2,"UTF-8");
+                    result = NetConfig.requestByGet(uri,"UTF-8");
                 } catch (Exception e) {
                     e.printStackTrace();
                     return false;
                 }
-            if(result.contains("116"))
+            if(result.contains("true"))
                 return true;
             return false;
         }
-
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             if (success) {
                 Toast.makeText(WorkSignActivity.this,"成功"+result,Toast.LENGTH_LONG).show();
-
             }else
                 Toast.makeText(WorkSignActivity.this,"失败"+result,Toast.LENGTH_LONG).show();
-
         }
-
         @Override
         protected void onCancelled() {
             mAuthTask = null;
         }
     }
 
-
-    // Get方式请求
-    public static String requestByGet(String server_address,String ucode) throws Exception {
-        String path =server_address;
-        // 新建一个URL对象
-        URL url = new URL(path);
-        // 打开一个HttpURLConnection连接
-        HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
-        // 设置连接超时时间
-        urlConn.setConnectTimeout(5 * 1000);
-        // 开始连接
-        urlConn.connect();
-        String TAG_GET = null ;
-        //urlConn.setRequestMethod("GET");
-        String data = null ;
-        // 判断请求是否成功
-        if (urlConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-            // 获取返回的数据
-            data =InputStreamTOString(urlConn.getInputStream(),ucode);// readStream(urlConn.getInputStream());
-        } else {
-            //Log.i("ss", "Get方式请求失败");
-        }
-        // 关闭连接
-        urlConn.disconnect();
-        return data;
-    }
-
-    /**
-     * 将InputStream转换成某种字符编码的String
-     * @param in
-     * @param encoding
-     * @return
-     * @throws Exception
-     */
-    public static String InputStreamTOString(InputStream in, String encoding) throws Exception{
-
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-        byte[] data = new byte[1024];
-        int count = -1;
-        while((count = in.read(data,0,1024)) != -1)
-            outStream.write(data, 0, count);
-        data = null;
-        return new String(outStream.toByteArray(),encoding);
-    }
     private String readTokenFromPerference(){
         return SaveToeknPerferenceUtils.getInstance(this).getLoginName();
     }
