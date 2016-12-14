@@ -112,7 +112,7 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
         String token = mTokenView.getText().toString();
         String lat = mLatView.getText().toString();
         String lng = mLngView.getText().toString();
-        String uri  = NetConfig.getSignUri(token,type,lat,lng);
+        String uri  = LatLngGenerateUtils.getSignUri(token,type,lat,lng);
         saveToken(token);
         return uri;
     }
@@ -290,7 +290,7 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
                 try {
                     result =token+lat+lng;
                     saveTokenToPerfercen(token);
-                    String uri  =NetConfig.getSignUri(token,type,lat,lng);
+                    String uri  =LatLngGenerateUtils.getSignUri(token,type,lat,lng);
                     result = NetConfig.requestByGet(uri,"UTF-8");
                 } catch (Exception e) {
                     e.printStackTrace();
