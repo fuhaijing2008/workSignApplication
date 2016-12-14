@@ -1,6 +1,7 @@
 package com.example.esc.worksigninapplication;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -76,7 +77,9 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+              //  attemptLogin();
+
+                attemptLogin2();
             }
         });
 
@@ -85,7 +88,7 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
         mLatView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                setRandoomLat();
+                setRandomLat();
             }
         });
         mLngView.setOnClickListener(new OnClickListener() {
@@ -96,10 +99,22 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
         });
 
         setDafultToken();
-        setRandoomLat();
+        setRandomLat();
         setRandomLng();
         setSignType();
 
+    }
+
+    private void attemptLogin2() {
+
+        String token = mTokenView.getText().toString();
+        String lat = mLatView.getText().toString();
+        String lng = mLngView.getText().toString();
+        String uri  =NetConfig.getSignUri(token,type,lat,lng);
+        saveTokenToPerfercen(token);
+        Intent intent = new Intent(WorkSignActivity.this, SignWebviewActivity.class);
+        intent.putExtra("uri",uri);
+        startActivity(intent);
     }
 
     private void setSignType() {
@@ -125,7 +140,7 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
         mLngView.setText(lng);
     }
 
-    private void setRandoomLat() {
+    private void setRandomLat() {
         String lat = LatLngGenerateUtils.generateRandomLat();
         mLatView.setText(lat);
     }
@@ -276,7 +291,6 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
                     saveTokenToPerfercen(token);
                     String uri  =NetConfig.getSignUri(token,type,lat,lng);
                     result =  requestByGet(uri2,"UTF-8");
-                 //   result = "bbb";
                 } catch (Exception e) {
                     e.printStackTrace();
                     return false;
