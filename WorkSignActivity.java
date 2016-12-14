@@ -63,6 +63,15 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign);
         // Set up the login form.
+        initView();
+
+        setDefaultToken();
+        setRandomLat();
+        setRandomLng();
+        setSignType();
+    }
+
+    private void initView() {
         mTokenView = (AutoCompleteTextView) findViewById(R.id.tvToken);
         populateAutoComplete();
 
@@ -92,11 +101,6 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
                 setRandomLng();
             }
         });
-
-        setDefaultToken();
-        setRandomLat();
-        setRandomLng();
-        setSignType();
     }
 
     private void attemptLoginByWeb() {
