@@ -34,9 +34,6 @@ import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
-/**
- * A login screen that offers login via email/password.
- */
 public class WorkSignActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
     /**
@@ -88,19 +85,19 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
         mLatView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                setRodoomLat();
+                setRandoomLat();
             }
         });
         mLngView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                setRodomLng();
+                setRandomLng();
             }
         });
 
         setDafultToken();
-        setRodoomLat();
-        setRodomLng();
+        setRandoomLat();
+        setRandomLng();
         setSignType();
 
     }
@@ -123,12 +120,12 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
         saveTokenToPerfercen(token);
     }
 
-    private void setRodomLng() {
+    private void setRandomLng() {
         String lng = LatLngGenerateUtils.generateRandomLng();
         mLngView.setText(lng);
     }
 
-    private void setRodoomLat() {
+    private void setRandoomLat() {
         String lat = LatLngGenerateUtils.generateRandomLat();
         mLatView.setText(lat);
     }
@@ -273,9 +270,7 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
         String result = "ddd";
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-                // Simulate network access.
-                String uri2 ="https://www.baidu.com";// "http://159.226.29.10/CnicCheck/CheckInfoServlet?token=4e44ff802e9d76a9a146401d2c31af64";
+                String uri2 ="https://www.baidu.com";
                 try {
                     result =token+lat+lng;
                     saveTokenToPerfercen(token);
@@ -311,7 +306,6 @@ public class WorkSignActivity extends AppCompatActivity implements LoaderCallbac
 
     // Get方式请求
     public static String requestByGet(String server_address,String ucode) throws Exception {
-
         String path =server_address;
         // 新建一个URL对象
         URL url = new URL(path);
